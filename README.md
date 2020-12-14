@@ -7,4 +7,3 @@ Bash scripts to ingest raw gkg gdelt files from the url http://data.gdeltproject
 
 #### Analytics  
 TBC
-
