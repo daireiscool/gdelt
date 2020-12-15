@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  gdelt_docker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+              BUILD_NUMBER: ${BUILD_NUMBER}
+    volumes:
+      - ./code_python:/home/code_python
+      - ./app:/home/app
+    user: root
+    restart: "no"
