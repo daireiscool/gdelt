@@ -25,7 +25,6 @@ def run_gdelt_ingestation(number_days=1, save_location="."):
     subprocess.Popen([
         os.getcwd()+"/gdelt_ingestion.sh",
         f"{number_days}",
-        f"{save_location}"
     ])
 
 
@@ -51,4 +50,4 @@ def run_gdelt_ingestation_range(
 
 if __name__ == "__main__":
     run_gdelt_ingestation()
-    time.sleep(1000)
+    time.sleep(10)

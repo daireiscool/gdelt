@@ -6,9 +6,14 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-              BUILD_NUMBER: ${BUILD_NUMBER}
+        BUILD_NUMBER: 0.0.1
     volumes:
       - ./code_python:/home/code_python
       - ./app:/home/app
+    ports:
+      - 8889:8889
+    environment:
+      - JAVA_HOME=/opt/openjdk-11
+      - PATH=$JAVA_HOME/bin:$PATH
     user: root
     restart: "no"
