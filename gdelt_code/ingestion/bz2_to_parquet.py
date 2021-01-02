@@ -8,10 +8,18 @@ Description:
 
 Note:
     Having issues with wildcards (?*) so manually inputting hours and minutes
+    
+    bz2_to_parquet() is useful as only deletes .bz2 after saing as parquet.
+    This is much more effecient to ingestions*.sh, as can stop half way through process, and 
+    simply restart process.
 
 """
-import glob, os
+import os
 from datetime import timedelta, datetime
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark import SparkContext
+
 
 hours = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
          "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
@@ -103,11 +111,31 @@ def bz2_to_parquet(
         times = [item for sublist in time_ for item in sublist]
         input_files = [bz2_folder+f"/GDELT_{date}{time_}00.bz2" for time_ in times]
         input_files = [value for value in input_files if value in directory]
-        
-        bz2_to_parquet_single(spark, input_files, output_file, columns)
-        for file in input_files:
-            try:
-                pass
-                #os.remove(file)
-            except:
-                print("Error while deleting file : ", filePath)
+        if len(input_files) == 0:
+            pass
+        else:
+            bz2_to_parquet_single(spark, input_files, output_file, columns)
+            for file in input_files:
+                try:
+                    os.remove(file)
+                except:
+                    print("Error while deleting file : ", filePath)
+                    
+
+if __name__ == "__main__":
+    
+    spark = SparkSession.builder \
+            .master("local[10]") \
+            .config("spark.driver.memory", "10g") \
+            .config("spark.executor.memory", "40g") \
+            .appName("GDELTUpdateFiles") \
+            .getOrCreate()
+
+    sc = spark.sparkContext
+    spark.conf.set("spark.sql.execution.arrow.enabled", "true")
+    
+    bz2_to_parquet(
+        spark,
+        "/mnt/d/data/gdelt/gkg/bzip",
+        "/mnt/d/data/gdelt/gkg/parquet",
+        "20150101", "20210101")
