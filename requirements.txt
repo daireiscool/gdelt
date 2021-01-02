@@ -1,3 +1,4 @@
 pyspark
 jupyter
 jupyter-core
+ipython

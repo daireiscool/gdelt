@@ -30,6 +30,15 @@ dev-bash:
 # Start a jupyter notebook
 jupyter-start:
 	docker-compose run --rm gdelt_docker jupyter notebook --port=8889 --no-browser --ip=0.0.0.0 --allow-root &> /dev/null &
+
+# Ingest GDELT by previous days - make ingest_day #days location
+ingest_day:
+	./gdelt_code/ingestion/gdelt_ingestion.sh
+
+# Ingest GDELT by previous days - make ingest_range end_date start_date location
+ingest_range:
+	./gdelt_code/ingestion/gdelt_ingestion_range.sh
+
 # make hello name=Worlid
 hello:
 	docker-compose run --rm gdelt_docker python3 app/commands/test.py batch hello 
@@ -37,3 +46,7 @@ hello:
 # make run-main
 run-main:
 	docker-compose run --rm gdelt_docker python3 gdelt_code/main.py batch main
+
+# make kill
+kill:
+	killall5 -9
