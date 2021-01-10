@@ -3,8 +3,9 @@
 
 Description:
     Code to convert gdelt .bz2 files into parquet files.
-    The .bz2 are saved every 15 minutesintervales, but the parquet files will be saved in 
-    daily intervals
+    The .bz2 are saved every 15 minutes intervales, but the parquet files will be saved in 
+    daily intervals.
+    This exponentially speeds up SPark when reading the GDELT files.
 
 Note:
     Having issues with wildcards (?*) so manually inputting hours and minutes
@@ -19,12 +20,13 @@ from datetime import timedelta, datetime
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
-
+from tqdm import tqdm
 
 hours = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
          "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
          "20", "21", "22", "23"]
 minutes = ["00","15","30","45"]
+
 
 def gdelt_header(location = "gdelt_header.txt"):
     """
@@ -75,8 +77,7 @@ def bz2_to_parquet_single(
     .toDF(*columns)
     
     dataFrame.write.format("parquet").mode("overwrite").save(parquet_file)
-    print(f"Saved {parquet_file}")
-    
+        
     
 def bz2_to_parquet(
     spark, bz2_folder, parquet_folder,
@@ -104,7 +105,7 @@ def bz2_to_parquet(
     
     directory = set([bz2_folder +"/"+ file for file in os.listdir(bz2_folder)])
     
-    for date in dates:
+    for date in tqdm(dates):
         output_file = parquet_folder+f"/GDELT_{date}.parquet"
         
         time_ = [[hour+minute for hour in hours] for minute in minutes]
